@@ -67,7 +67,7 @@ RUN set -eux; \
 	rm -r /usr/src/redis; \
         \
         yum clean all -y && \
-        rm -rf /var/cache/yum :\
+        rm -rf /var/cache/yum ;\
 	\
 	redis-cli --version; \
 	redis-server --version
