@@ -22,6 +22,7 @@ RUN set -eux; \
 RUN set -eux; \
     yum install -y \
         java-1.8.0-openjdk-headless \
+        perl \
         ca-certificates \
         dirmngr \
         gnupg \
