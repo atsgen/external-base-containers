@@ -1,82 +1,28 @@
-FROM registry.access.redhat.com/ubi7/ubi:latest
+FROM atsgen/zookeeper:3.4.14
+ARG VENDOR_NAME
+ARG VENDOR_DOMAIN
 
-ENV ZOO_CONF_DIR=/conf \
-    ZOO_DATA_DIR=/data \
-    ZOO_DATA_LOG_DIR=/datalog \
-    ZOO_LOG_DIR=/logs \
-    ZOO_TICK_TIME=2000 \
-    ZOO_INIT_LIMIT=5 \
-    ZOO_SYNC_LIMIT=2 \
-    ZOO_AUTOPURGE_PURGEINTERVAL=0 \
-    ZOO_AUTOPURGE_SNAPRETAINCOUNT=3 \
-    ZOO_MAX_CLIENT_CNXNS=60
+ARG CONTAINER_NAME
+ARG CONTRAIL_CONTAINER_TAG
+LABEL vendor=$VENDOR_NAME \
+      version=$CONTRAIL_CONTAINER_TAG \
+      release="5.1.0" \
+      name=$CONTAINER_NAME \
+      summary="Contrail Zookeeper" \
+      description="Contrail uses the Apache ZooKeeper process to maintain synchronization of Contrail configuration, analytics and database running on the different instances of controllers."
 
-# Add a user with an explicit UID/GID and create necessary directories
-RUN set -eux; \
-    groupadd -r zookeeper --gid=1000; \
-    useradd -r -g zookeeper --uid=1000 zookeeper; \
-    mkdir -p "$ZOO_DATA_LOG_DIR" "$ZOO_DATA_DIR" "$ZOO_CONF_DIR" "$ZOO_LOG_DIR"; \
-    chown zookeeper:zookeeper "$ZOO_DATA_LOG_DIR" "$ZOO_DATA_DIR" "$ZOO_CONF_DIR" "$ZOO_LOG_DIR"
+# Add required license as text file in Liceses directory
+RUN mkdir /licenses
+COPY licensing.txt /licenses/licensing.txt
 
-# Install required packges
-RUN set -eux; \
-    yum install -y \
-        java-1.8.0-openjdk-headless \
-        ca-certificates \
-        dirmngr \
-        gnupg \
-        nc \
-        wget; \
-    curl -o /usr/local/bin/gosu -SL "https://github.com/tianon/gosu/releases/download/1.10/gosu-amd64" ; \
-    chmod +x /usr/local/bin/gosu; \
-    yum clean all -y && \
-    rm -rf /var/cache/yum ;\
-# Verify that gosu binary works
-    gosu nobody true
+COPY *.sh hostname_to_ip /
+RUN /bin/bash -c 'for item in `ls /__*` ; do mv $item /${item:3} ; done'
 
-ARG GPG_KEY=3F7A1D16FA4217B1DC75E1C9FFE35B7F15DFA1BA
-ARG DISTRO_NAME=zookeeper-3.4.14
-
-# Download Apache Zookeeper, verify its PGP signature, untar and clean up
-RUN set -eux; \
-    ddist() { \
-        local f="$1"; shift; \
-        local distFile="$1"; shift; \
-        local success=; \
-        local distUrl=; \
-        for distUrl in \
-            'https://www.apache.org/dyn/closer.cgi?action=download&filename=' \
-            https://www-us.apache.org/dist/ \
-            https://www.apache.org/dist/ \
-            https://archive.apache.org/dist/ \
-        ; do \
-            if wget -q -O "$f" "$distUrl$distFile" && [ -s "$f" ]; then \
-                success=1; \
-                break; \
-            fi; \
-        done; \
-        [ -n "$success" ]; \
-    }; \
-    ddist "$DISTRO_NAME.tar.gz" "zookeeper/$DISTRO_NAME/$DISTRO_NAME.tar.gz"; \
-    ddist "$DISTRO_NAME.tar.gz.asc" "zookeeper/$DISTRO_NAME/$DISTRO_NAME.tar.gz.asc"; \
-    export GNUPGHOME="$(mktemp -d)"; \
-    gpg --keyserver ha.pool.sks-keyservers.net --recv-key "$GPG_KEY" || \
-    gpg --keyserver pgp.mit.edu --recv-keys "$GPG_KEY" || \
-    gpg --keyserver keyserver.pgp.com --recv-keys "$GPG_KEY"; \
-    gpg --batch --verify "$DISTRO_NAME.tar.gz.asc" "$DISTRO_NAME.tar.gz"; \
-    tar -xzf "$DISTRO_NAME.tar.gz"; \
-    mv "$DISTRO_NAME/conf/"* "$ZOO_CONF_DIR"; \
-    rm -rf "$GNUPGHOME" "$DISTRO_NAME.tar.gz" "$DISTRO_NAME.tar.gz.asc"; \
-    chown -R zookeeper:zookeeper "/$DISTRO_NAME"
-
-WORKDIR $DISTRO_NAME
-VOLUME ["$ZOO_DATA_DIR", "$ZOO_DATA_LOG_DIR", "$ZOO_LOG_DIR"]
-
-EXPOSE 2181 2888 3888
-
-ENV PATH=$PATH:/$DISTRO_NAME/bin \
-    ZOOCFGDIR=$ZOO_CONF_DIR
-
-COPY docker-entrypoint.sh /
-ENTRYPOINT ["/docker-entrypoint.sh"]
+ENTRYPOINT ["/contrail-entrypoint.sh"]
 CMD ["zkServer.sh", "start-foreground"]
+
+ENV CONTRAIL_VERSION=$CONTRAIL_CONTAINER_TAG
+ENV SERVICE_NAME=zookeeper
+LABEL $VENDOR_DOMAIN".service"=$SERVICE_NAME
+LABEL $VENDOR_DOMAIN".container.name"=$CONTAINER_NAME
+
