@@ -2,7 +2,6 @@
 set -ex
 export SCRIPT_DIR=$(realpath $(dirname $0))
 source $SCRIPT_DIR/parse-env.sh
-source $SCRIPT_DIR/basebuild.sh
 
 build_arg_opts+=" --build-arg CONTRAIL_REGISTRY=${CONTRAIL_REGISTRY}"
 build_arg_opts+=" --build-arg CONTRAIL_CONTAINER_TAG=${CONTRAIL_CONTAINER_TAG}"
