@@ -8,7 +8,7 @@ LABEL vendor=$VENDOR_NAME \
       version=$CONTRAIL_CONTAINER_TAG \
       release="5.1.0" \
       name=$CONTAINER_NAME \
-      summary="Contrail Zookeeper" \
+      summary="Tungsten Fabric Zookeeper" \
       description="Contrail uses the Apache ZooKeeper process to maintain synchronization of Contrail configuration, analytics and database running on the different instances of controllers."
 
 # Add required license as text file in Liceses directory

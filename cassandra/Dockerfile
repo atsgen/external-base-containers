@@ -8,7 +8,7 @@ LABEL vendor=$VENDOR_NAME \
       version=$CONTRAIL_CONTAINER_TAG \
       release="5.1.0" \
       name=$CONTAINER_NAME \
-      summary="Contrail Cassandra DB" \
+      summary="Tungsten Fabric Cassandra DB" \
       description="Configuration database for Contrail Controller."
 
 # Add required license as text file in Liceses directory

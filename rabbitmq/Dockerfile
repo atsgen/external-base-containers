@@ -8,7 +8,7 @@ LABEL vendor=$VENDOR_NAME \
       version=$CONTRAIL_CONTAINER_TAG \
       release="5.1.0" \
       name=$CONTAINER_NAME \
-      summary="Contrail RabbitMQ" \
+      summary="Tungsten Fabric RabbitMQ" \
       description="Contrail Rabbitmq is the message bus that different Contrail processes subscribe to."
 
 # Add required license as text file in Liceses directory

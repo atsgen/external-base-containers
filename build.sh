@@ -11,19 +11,13 @@ build_arg_opts+=" --build-arg YUM_ENABLE_REPOS=\"$YUM_ENABLE_REPOS\""
 build_arg_opts+=" --build-arg VENDOR_NAME=${VENDOR_NAME}"
 build_arg_opts+=" --build-arg VENDOR_DOMAIN=${VENDOR_DOMAIN}"
 
-pushd cassandra
-docker build -t $CONTRAIL_REGISTRY/tungsten-external-cassandra:$CONTRAIL_CONTAINER_TAG .
+pushd $SCRIPT_DIR
+for dir in $(ls -d */); do
+  pushd $dir
+  CONTAINER_NAME="tungsten-external-${dir%?}"
+  echo $CONTAINER_NAME
+  build_arg_name_opt=" --build-arg CONTAINER_NAME=${CONTAINER_NAME}"
+  docker build $build_arg_opts $build_arg_name_opt -t $CONTRAIL_REGISTRY/$CONTAINER_NAME:$CONTRAIL_CONTAINER_TAG .
+  popd
+done
 popd
-
-pushd zookeeper
-docker build -t $CONTRAIL_REGISTRY/tungsten-external-zookeeper:$CONTRAIL_CONTAINER_TAG .
-popd
-
-pushd rabbitmq
-docker build -t $CONTRAIL_REGISTRY/tungsten-external-rabbitmq:$CONTRAIL_CONTAINER_TAG .
-popd
-
-pushd redis
-docker build -t $CONTRAIL_REGISTRY/tungsten-external-redis:$CONTRAIL_CONTAINER_TAG .
-popd
-

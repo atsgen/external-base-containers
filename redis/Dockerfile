@@ -8,7 +8,7 @@ LABEL vendor=$VENDOR_NAME \
       version=$CONTRAIL_CONTAINER_TAG \
       release="5.1.0" \
       name=$CONTAINER_NAME \
-      summary="Contrail Redis" \
+      summary="Tungsten Fabric Redis" \
       description="Contrail Redis server supports query engine."
 
 # Add required license as text file in Liceses directory
