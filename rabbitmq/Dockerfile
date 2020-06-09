@@ -19,7 +19,9 @@ COPY *.sh hostname_to_ip /
 RUN /bin/bash -c 'for item in `ls /__*` ; do mv $item /${item:3} ; done'
 
 #xxd is in the vim-common package.
-RUN yum install -y bind-libs vim-common
+RUN yum install -y bind-libs vim-common && \
+    yum clean all -y && \
+    rm -rf /var/cache/yum
 
 ENTRYPOINT ["/contrail-entrypoint.sh"]
 CMD ["rabbitmq-server"]

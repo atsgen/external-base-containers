@@ -12,26 +12,18 @@ build_arg_opts+=" --build-arg VENDOR_NAME=${VENDOR_NAME}"
 build_arg_opts+=" --build-arg VENDOR_DOMAIN=${VENDOR_DOMAIN}"
 
 pushd cassandra
-docker build -t $CONTRAIL_REGISTRY/tungsten-cassandra:$CONTRAIL_CONTAINER_TAG .
+docker build -t $CONTRAIL_REGISTRY/tungsten-external-cassandra:$CONTRAIL_CONTAINER_TAG .
 popd
 
 pushd zookeeper
-docker build -t $CONTRAIL_REGISTRY/tungsten-zookeeper:$CONTRAIL_CONTAINER_TAG .
-popd
-
-pushd kafka
-docker build -t $CONTRAIL_REGISTRY/tungsten-kafka:$CONTRAIL_CONTAINER_TAG .
+docker build -t $CONTRAIL_REGISTRY/tungsten-external-zookeeper:$CONTRAIL_CONTAINER_TAG .
 popd
 
 pushd rabbitmq
-docker build -t $CONTRAIL_REGISTRY/tungsten-rabbitmq:$CONTRAIL_CONTAINER_TAG .
+docker build -t $CONTRAIL_REGISTRY/tungsten-external-rabbitmq:$CONTRAIL_CONTAINER_TAG .
 popd
 
 pushd redis
-docker build -t $CONTRAIL_REGISTRY/tungsten-redis:$CONTRAIL_CONTAINER_TAG .
-popd
-
-pushd rsyslogd
-docker build -t $CONTRAIL_REGISTRY/tungsten-rsyslogd:$CONTRAIL_CONTAINER_TAG .
+docker build -t $CONTRAIL_REGISTRY/tungsten-external-redis:$CONTRAIL_CONTAINER_TAG .
 popd
 
